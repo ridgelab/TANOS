@@ -34,15 +34,6 @@ class Node:
 		#if kwargs is not None:
 		#	for k,v in kwargs.iteritems():
 		#		self.metadata[str(k)] = str(v)
-
-
-		# "private" member fields
-		##	__subtree_leaf_names: # used to store all taxa names in this part of the tree
-		#self.__subtree_leaf_names = []
-		##	__subtree_leaf_scores: # used to store the percentage of jackknifed trees that
-		##	had the clade of __subtree_leaf_names omitting the element at the parallel
-		##	position in __subtree_leaf_scores
-		#self.__subtree_leaf_scores = []
 	
 	def initializeNode(self, newick, index=0):
 		# 1- conceptual str.lstrip() beginning at position index 
@@ -149,21 +140,9 @@ class Node:
 
 		return index
 
-	# comparison operators
-	#def __lt__(self, other):
-	#	return False
-
 	def isEqualBasedOnSetOfLeafLabels(self, other):
-		#return frozen_set(self.getLeafLabels()) == frozen_set(other.getLeafLabels()) # it should already not have duplicates
+		# it should already not have duplicates
 		return self.isEqualBasedOnPreFetchedSetOfLeafLabels(sorted(other.getLeafLabels()))
-		#my_labels = sorted(self.getLeafLabels())
-		#other_labels = sorted(other.getLeafLabels())
-		#if len(my_labels) == len(other_labels):
-		#	for mine,theirs in zip(my_labels,other_labels):
-		#		if mine != theirs:
-		#			return False
-		#	return True
-		#return False
 
 	def isEqualBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels): # leaf_labels must be sorted
 		return sorted(self.getLeafLabels()) == leaf_labels
