@@ -398,7 +398,6 @@ def main():
 	validateAndResolveJackknifedTrees(taxa_x_fns, taxa) # side-effect (arg1), no change (arg2), no return
 
 	# sort jackknifed trees (individually sort each path list) 
-	# HOW DO YOU SAY THIS MORE PROFESSIONALLY (arguably not necessary, but it feels nice)
 	sortJackknifedTrees(taxa_x_fns) # side-effect, no return
 
 	# build jackknifed trees from file
