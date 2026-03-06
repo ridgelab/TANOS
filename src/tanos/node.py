@@ -5,8 +5,6 @@ __author__ = "Brandon Pickett"
 # ----------- IMPORTS ---------------------------- ||
 import sys
 
-# ---------- FUNCTIONS --------------------------- ||
-
 # ----------- CLASSES ---------------------------- ||
 class MalformedNewickTree(Exception):
 	pass
@@ -345,18 +343,13 @@ class Node:
 			j.append(" [")
 		j.append(f']\n{tabs}}}')
 
-		# return
 		return ''.join(j)
 	
 	def getAscii(self, prefix="", children_prefix=""):
 		output = prefix + self.label + '\n'
 		if self.hasChildren():
 			for i in range(0, len(self.children) - 1, 1):
-				#next_prefix = children_prefix + "|-- "
-				#next_children_prefix = children_prefix + "|   "
-				#output += self.children[i].getAscii(prefix=next_prefix, children_prefix=next_children_prefix)
 				output += self.children[i].getAscii(prefix=f"{children_prefix}|-- ", children_prefix=f"{children_prefix}|   ")
-			#output += self.children[-1].getAscii(prefix="", children_prefix="")
 			output += self.children[-1].getAscii(prefix=f"{children_prefix}'-- ", children_prefix=f"{children_prefix}    ")
 		return output
 
