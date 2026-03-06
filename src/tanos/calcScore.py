@@ -20,6 +20,15 @@ class CalcScoreException(Exception):
 
 # ---------- FUNCTIONS --------------------------- ||
 def handleArgs():
+	"""
+	Defines possible arguments user can include in a call to calcScore to influence input or output, or see other details about this project/file
+
+	Args:
+		none
+
+	Returns: 
+		parsed arguments object
+	"""
 	# define the main argument parser
 	parser = argparse.ArgumentParser(prog=Path(sys.argv[0]).name, add_help=False, allow_abbrev=True, 
 									formatter_class=argparse.RawTextHelpFormatter, 
@@ -204,6 +213,16 @@ def handleArgs():
 	return args
 
 def createTreeFromNewickFile(filename, treename):
+	"""
+	Creates a Tree object from a Newick file
+
+	Args:
+		filename (str): location/name of the newick file
+		treename (str): name for the Tree object, will appear when user prints the tree
+
+	Returns:
+		Tree: object that conceptually represents the data in the Newick file
+	"""
 	nwk = ''
 	with open(filename, 'r') as ifd:
 		for line in ifd:
@@ -211,6 +230,17 @@ def createTreeFromNewickFile(filename, treename):
 	return Tree(newick=nwk, name=treename)
 
 def getJackknifedTreesFileNames(tree_dir, tree_ext, trees_fofn):
+	"""
+	Extracts the names of every jackknifed tree file, either from a file listing taxa names with file names (trees_fofn) or a folder that contains all the tree files (tree_dir)
+	
+	Args:
+		tree_dir (str): name of directory containing jackknifed tree files, may be None if user chose a different way of identifying file names
+		tree_ext (str): the file extension at the end of each jackknifed file's name
+		trees_fofn (str): file location for a file containing a list of taxa names and names of the jackknifed files, may be None
+
+	Returns:
+		dict: dictionary with a key for each taxon name pointing to a file name for the jackknifed file containing all taxa except that one
+	"""
 	taxa_x_fns = {}
 	if trees_fofn is not None: # user specified the fofn
 		with open(trees_fofn, 'r') as ifd:
@@ -218,12 +248,12 @@ def getJackknifedTreesFileNames(tree_dir, tree_ext, trees_fofn):
 				fields = line.rstrip('\n').split('\t')
 				taxon = fields[0]
 				fn = fields[1]
-				if not taxon in taxa_x_fns:
+				if taxon not in taxa_x_fns:
 					taxa_x_fns[taxon] = []
 				taxa_x_fns[taxon].append(fn)
 
 	else: # user did not specify the fofn
-		match_pattern = r"tree-[0-9]+\." + tree_ext
+		match_pattern = rf"^tree-\d+\.{re.escape(tree_ext)}$"
 		# we assume tree_dir exists and is a directory (handled during handleArgs)
 		d = Path(tree_dir)
 		for sd in d.iterdir(): # search for sub directories (one level, assume one dir per taxa)
@@ -231,17 +261,27 @@ def getJackknifedTreesFileNames(tree_dir, tree_ext, trees_fofn):
 				taxon = sd.name
 				for f in sd.iterdir(): # search for files in the dir
 					if f.is_file() and re.match(match_pattern, f.name) is not None: # look only at files. they must match f"tree-\d+.{tree_ext}"
-						if not taxon in taxa_x_fns:
+						if taxon not in taxa_x_fns:
 							taxa_x_fns[taxon] = []
 						taxa_x_fns[taxon].append(str(f.resolve()))
 	
 	return taxa_x_fns
 
 def generateReplicatesHistogram(reps):
+	"""
+	Shows user how many replicates are in each taxon. Every taxon should have the same number of replicates, so this is only shown to the user when that assumption is broken. 
+
+	Args:
+		reps (list[int]): list containing the number of reps in each taxon
+
+	Returns:
+		str: human-readable representation of the number of reps in each taxon (not labelled by taxon)
+
+	"""
 	# do the counting
 	counts = {}
 	for rep in reps:
-		if not rep in counts:
+		if rep not in counts:
 			counts[rep] = 0
 		counts[rep] += 1
 	
@@ -262,26 +302,36 @@ def generateReplicatesHistogram(reps):
 	return output
 
 def validateAndResolveJackknifedTrees(taxa_x_fns, taxa):
-	# are all taxa present in taxa_x_fns?
+	"""
+	Makes sure that the dictionary of jackknifed trees matches the original tree, the taxa in the dictionary match each other, and all the required files exist
+
+	Args:
+		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
+		taxa (list[str]): names of taxa present in the original tree
+
+	Returns:
+		none, but errors if any requirements are not met
+	"""
+	# confirms that all taxa from the original tree exist in taxa_x_fns, errors otherwise
 	taxa_set = frozenset(list(taxa_x_fns.keys()))
 	for taxon in taxa:
-		if not taxon in taxa_set:
+		if taxon not in taxa_set:
 			raise CalcScoreException("ERROR: One or more taxa from the original/main tree were not present in the\njackknifed trees dir.")
 
-	# are all taxa in taxa_x_fns present in taxa?
+	# confirms that all taxa in taxa_x_fns exist in the original tree, errors otherwise
 	taxa_set = frozenset(taxa)
 	for taxon in taxa_x_fns.keys():
-		if not taxon in taxa_set:
-			raise CalcScoreException("ERROR: One or more taxa from the jackknifed trees dir were not present in in the\noriginal/main tree.")
+		if taxon not in taxa_set:
+			raise CalcScoreException("ERROR: One or more taxa from the jackknifed trees dir were not present in the\noriginal/main tree.")
 	
-	# do all taxa have equal number of replicates?
+	# confirms that all taxa in taxa_x_fns have the same number of replicates
 	reps = [len(taxa_x_fns[taxon]) for taxon in taxa_set]
 	first_len = reps[0]
 	if not all(rep == first_len for rep in reps):
 		hist = generateReplicatesHistogram(reps)
 		raise CalcScoreException(f"ERROR: All taxa should have the same number of replicates. Here is the replicate\nhistogram:\n{hist}\n)")
 	
-	# do all the files exist?
+	# confirms that all the required files exist
 	for taxon in taxa_x_fns.keys():
 		fns = taxa_x_fns[taxon]
 		for i,fn in enumerate(fns):
@@ -289,19 +339,37 @@ def validateAndResolveJackknifedTrees(taxa_x_fns, taxa):
 				p = Path(fn)
 				p = p.resolve()
 				if not (p.exists() and p.is_file()):
-					raise CalcScoreException(f"ERROR: \"{fn}\" was did not exist or was not a regular file (taxon: {taxon}).")
+					raise CalcScoreException(f"ERROR: \"{fn}\" does not exist or is not a regular file (taxon: {taxon}).")
 				taxa_x_fns[taxon][i] = str(p)
 			except:
 				raise CalcScoreException(f"ERROR: while testing if \"{fn}\" was valid for {taxon}, failed to create or\nresolve Path object.")
 
 def sortJackknifedTrees(taxa_x_fns):
+	"""
+	Sorts the list of jackknifed file names associated with each taxon based on the number on the filename
+
+	Args:
+		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
+
+	Returns:
+		(dict[str,list[str]]): sorted version of taxa_x_fns
+	"""
 	for taxon in taxa_x_fns.keys():
 		taxa_x_fns[taxon].sort(key=lambda x: int(re.sub(r"^.*(\d+).*$", r"\1", Path(x).stem)))
 
 def buildJackknifedTreesFromFiles(taxa_x_fns):
+	"""
+	Creates trees from file names
+
+	Args:
+		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
+
+	Returns:
+		(dict[str, list[Tree]]): keys are taxa names, values are a list of jackknifed trees
+	"""
 	taxa_x_trees = {}
 	for taxon in taxa_x_fns.keys():
-		if not taxon in taxa_x_trees:
+		if taxon not in taxa_x_trees:
 			taxa_x_trees[taxon] = []
 		fns = taxa_x_fns[taxon]
 		for i,fn in enumerate(fns):
@@ -329,7 +397,8 @@ def main():
 	# validate and resolve jackknifed trees (paths, not tree objects)
 	validateAndResolveJackknifedTrees(taxa_x_fns, taxa) # side-effect (arg1), no change (arg2), no return
 
-	# sort jackknifed trees (individually sort each path list) (arguably not necessary, but it feels nice)
+	# sort jackknifed trees (individually sort each path list) 
+	# HOW DO YOU SAY THIS MORE PROFESSIONALLY (arguably not necessary, but it feels nice)
 	sortJackknifedTrees(taxa_x_fns) # side-effect, no return
 
 	# build jackknifed trees from file
