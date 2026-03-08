@@ -21,7 +21,7 @@ class CalcScoreException(Exception):
 # ---------- FUNCTIONS --------------------------- ||
 def handleArgs():
 	"""
-	Defines possible arguments user can include in a call to calcScore to influence input or output, or see other details about this project/file
+	Defines possible arguments user can include in a call to calcScore to influence input or output, or see other details about this project/file.
 
 	Args:
 		none
@@ -214,7 +214,7 @@ def handleArgs():
 
 def createTreeFromNewickFile(filename, treename):
 	"""
-	Creates a Tree object from a Newick file
+	Creates a Tree object from a Newick file.
 
 	Args:
 		filename (str): location/name of the newick file
@@ -231,7 +231,7 @@ def createTreeFromNewickFile(filename, treename):
 
 def getJackknifedTreesFileNames(tree_dir, tree_ext, trees_fofn):
 	"""
-	Extracts the names of every jackknifed tree file, either from a file listing taxa names with file names (trees_fofn) or a folder that contains all the tree files (tree_dir)
+	Extracts the names of every jackknifed tree file, either from a file listing taxa names with file names (trees_fofn) or a folder that contains all the tree files (tree_dir).
 	
 	Args:
 		tree_dir (str): name of directory containing jackknifed tree files, may be None if user chose a different way of identifying file names
@@ -303,7 +303,7 @@ def generateReplicatesHistogram(reps):
 
 def validateAndResolveJackknifedTrees(taxa_x_fns, taxa):
 	"""
-	Makes sure that the dictionary of jackknifed trees matches the original tree, the taxa in the dictionary match each other, and all the required files exist
+	Makes sure that the dictionary of jackknifed trees matches the original tree, the taxa in the dictionary match each other, and all the required files exist.
 
 	Args:
 		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
@@ -346,7 +346,7 @@ def validateAndResolveJackknifedTrees(taxa_x_fns, taxa):
 
 def sortJackknifedTrees(taxa_x_fns):
 	"""
-	Sorts the list of jackknifed file names associated with each taxon based on the number on the filename
+	Sorts the list of jackknifed file names associated with each taxon based on the number on the filename.
 
 	Args:
 		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
@@ -359,7 +359,7 @@ def sortJackknifedTrees(taxa_x_fns):
 
 def buildJackknifedTreesFromFiles(taxa_x_fns):
 	"""
-	Creates trees from file names
+	Creates trees from file names.
 
 	Args:
 		taxa_x_fns (dict[str,list[str]]): keys are taxa names, values are a list of jackknifed file names
@@ -398,6 +398,7 @@ def main():
 	validateAndResolveJackknifedTrees(taxa_x_fns, taxa) # side-effect (arg1), no change (arg2), no return
 
 	# sort jackknifed trees (individually sort each path list) 
+	# optional but included for completeness and clarity
 	sortJackknifedTrees(taxa_x_fns) # side-effect, no return
 
 	# build jackknifed trees from file
