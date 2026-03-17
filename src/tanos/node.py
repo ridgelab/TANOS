@@ -7,44 +7,63 @@ import sys
 
 # ----------- CLASSES ---------------------------- ||
 class MalformedNewickTree(Exception):
+	"""
+	Exception raised when a Newick-formatted tree string is malformed.
+	"""
 	pass
 
 class Node:
-	
-	# class level variables (define once, not for every instance of the class)
-	# for example:
-	# PI = 3.14
+	"""
+		Represent a node in a phylogenetic tree.
 
-	# constructor(s)
+		Each node may be either a leaf (taxon) or an internal clade.
+		Nodes store references to their immediate children, a label, 
+		and a dictionary of metadata.
+
+		Attributes:
+			children (list[Node]): Nodes immediately following current node.
+			label (str): Taxon or clade name.
+			metadata (dict[str, Any]): Dictionary of associated branch lengths or other annotations.
+
+			Notes:
+				Metadata values may include both numeric and string data. 
+				A standard branch length can be accessed via self.metadata["branch_length"].
+	"""
+
+	# Constructors
 	def __init__(self):
-		# "normal" "public" member fields
-
-		# 	children: immediate children Nodes
+		"""
+		Initialize an empty Node in a phylogenetic tree.
+		
+		The node is created with no children, and an empty label and metadata dictionary.
+		"""
 		self.children = []
-		#	label: used to store a taxon name for leaf Nodes or clade name for internal nodes
 		self.label = ""
-		#	metadata: Here we enable the storage
-		#	of multiple name value pairs.
-		#	The values can be numbers or strings.
-		#	To get the standard branch length, simply use
-		#	self.metadata["branch_length"].
 		self.metadata = {}
-		#if kwargs is not None:
-		#	for k,v in kwargs.iteritems():
-		#		self.metadata[str(k)] = str(v)
 	
 	def initializeNode(self, newick, index=0):
-		# 1- conceptual str.lstrip() beginning at position index 
+		"""
+		Recursively parse a Newick string and populate Node attributes.
+
+		Args:
+			newick (str): Newick-formatted tree string.
+			index (int, optional): Current parsing position in string.
+
+		Returns:
+			int: Updated index after parsing node.
+
+		"""
+		# 1 - Conceptual str.lstrip() beginning at position index.
 		index = self.__consumeNewickWhitespace__(newick, index=index)
 
-		# 2- process children (recursively if neeeded)
+		# 2 - Process children (recursively if neeeded).
 		while index < len(newick) and ( newick[index] == '(' or newick[index] == ',' ):
 			index += 1 # get past the recursive signal (left paren or comma)
 			self.children.append(Node())
 			index = self.children[-1].initializeNode(newick, index=index)
 			index = self.__consumeNewickWhitespace__(newick, index=index)
 
-		# 3- process label (quote or unquoted)
+		# 3 - Process label (quote or unquoted).
 		if index < len(newick):
 			if newick[index] == '"' or newick[index] == "'":
 				# quoted label present
@@ -57,14 +76,14 @@ class Node:
 		else:
 			raise MalformedNewickTree("Reached end of tree (while about to process a potential label) without encountering a semi-colon")
 
-		# 4- process branch length
+		# 4 - Process branch length.
 		if index < len(newick):
 			index = self.__getFromNewickAndPossiblySetBranchLength__(newick, index)
 
 		else:
 			raise MalformedNewickTree("Reached end of tree (while about to process a potential branch length) without encountering a semi-colon")
 
-		# 5- process end of node (possibly of entire tree)
+		# 5 - Process end of node (possibly of entire tree).
 		if index < len(newick):
 			if newick[index] == ')':
 				index += 1 # get past the )
@@ -80,6 +99,16 @@ class Node:
 			raise MalformedNewickTree("Reached end of tree (while expecting either a right paren, comma, or semi-colon) without encountering a semi-colon")
 
 	def __consumeNewickWhitespace__(self, newick, index=0):
+		"""
+		Skip index past all whitespace in Newick string.
+
+		Args:
+			newick (str): Newick string.
+			index (int): Current index.
+
+		Returns:
+			int: Index of first character after whitespace.
+		"""
 		while index < len(newick) and newick[index].isspace():
 			index += 1
 		return index
