@@ -10,11 +10,16 @@ from .node import Node,MalformedNewickTree
 
 # ----------- CLASSES ---------------------------- ||
 class Tree:
-	
-	# class level variables (define once, not for every instance of the class)
-	# for example:
-	# PI = 3.14
-	#NEWICK_PUNCT = ":;,()"
+	"""
+	A class representing a phylogenetic tree.
+
+	This class wraps a single root Node and provides methods for
+	accessing, analyzing, and exporting the tree.
+
+	Attributes:
+		root (Node): The root node of the tree.
+		name (str): Optional name for the tree,
+	"""
 
 	# constructor(s)
 	def __init__(self, newick="", name=""):
@@ -172,6 +177,13 @@ class Tree:
 
 # ------------- MAIN ----------------------------- ||
 if __name__ == "__main__":
-	sys.stderr.write("ERROR: This is a module, it is meant to be imported -- not run directly!\n")
-	sys.exit(1)
+	"""
+	This module is intended to be imported as a library for phylogenetic tree operations,
+	and running it directly is not currently supported.
 
+	Attempting to run will procuce an error message and exit.
+	"""
+	sys.stderr.write(
+		"ERROR: This is a module, it is meant to be imported, not run directly!\n"
+		)
+	sys.exit(1)
