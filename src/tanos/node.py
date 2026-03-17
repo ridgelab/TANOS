@@ -225,7 +225,6 @@ class Node:
 		"""
 		return sorted(self.getLeafLabels()) == leaf_labels
 	
-	# ----------- PUBLIC MEMBER FUNCTIONS  ------------- ||
 	def isLeaf(self):
 		"""
 		Determine if node is a leaf.
