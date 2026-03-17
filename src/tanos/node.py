@@ -225,30 +225,60 @@ class Node:
 		"""
 		return sorted(self.getLeafLabels()) == leaf_labels
 	
-	# "normal" "public" member functions
+	# ----------- PUBLIC MEMBER FUNCTIONS  ------------- ||
 	def isLeaf(self):
+		"""
+		Determine if node is a leaf.
+
+		Returns:
+			bool: True if leaf (node has no children), False otherwise. 
+		"""
 		return not self.hasChildren()
 	
 	def hasChildren(self):
+		"""
+		Check if node has children.
+
+		Returns:
+			bool: True if this node has children, False otherwise.
+		"""
 		return bool(len(self.children))
 	
 	def hasGrandChildren(self):
+		"""
+		Check if node has grandchildren:
+
+		Returns:
+			bool: True if any child node has children, False otherwise.
+		"""
 		for child in self.children:
 			if child.hasChildren():
 				return True
 		return False
 	
-	def getLeafLabels(self): # returns list leaf labels, e.g., [ "A", "B", "C", ... ]
+	def getLeafLabels(self):
+		"""
+		Get all leaf labels in subtree.
+
+		Returns:
+			list[str]: List of leaf labels.
+		"""
 		leaves = []
 		if self.isLeaf():
 			leaves.append(self.label)
 		else:
 			for child in self.children:
 				leaves.extend(child.getLeafLabels())
-		#assert sorted(list(frozen_set(leaves))) == sorted(leaves) # assuming the tree does _not_ have leaves w/ identical labels
+		# assuming the tree does _not_ have leaves w/ identical labels
 		return leaves
 	
-	def getEachSubTreeLeafLabelSets(self): # returns list of lists of leaf labels for each subtree, e.g., [ ["A"], ["B"], ["A", "B"], ["C"], ["A", "B", "C"], ... ]
+	def getEachSubTreeLeafLabelSets(self):
+		"""
+		Get leaf labels for all subtrees.
+
+		Returns: 
+			list[list[str]]: Nested list of leaf labels where each inner list is the labels of one subtree.
+		"""
 		leaves = []
 		if self.isLeaf():
 			leaves.append([self.label])
@@ -258,7 +288,13 @@ class Node:
 			leaves.append(self.getLeafLabels())
 		return leaves
 
-	def getEachSubTreeLeafLabelSetStrs(self): # returns list of leaf labels for each subtree, e.g., [ "A", "B", "AB", "C", "ABC", ... ]
+	def getEachSubTreeLeafLabelSetStrs(self):
+		"""
+		Get leaf labels for all subtrees as concatonated strings.
+
+		Returns:
+			list[str]: List of leaf labels where each element in the list is a concatonated string of all subtree leaf labels.
+		"""
 		leaves = []
 		if self.isLeaf():
 			leaves.append(self.label)
