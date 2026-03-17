@@ -30,7 +30,7 @@ class Node:
 				A standard branch length can be accessed via self.metadata["branch_length"].
 	"""
 
-	# Constructors
+	# ----------- CONSTRUCTORS ------------------- ||
 	def __init__(self):
 		"""
 		Initialize an empty Node in a phylogenetic tree.
@@ -97,7 +97,8 @@ class Node:
 					
 		else:
 			raise MalformedNewickTree("Reached end of tree (while expecting either a right paren, comma, or semi-colon) without encountering a semi-colon")
-
+		
+	# ----------- PRIVATE HELPER FUNCTIONS  --------------- ||
 	def __consumeNewickWhitespace__(self, newick, index=0):
 		"""
 		Skip index past all whitespace in Newick string.
@@ -114,6 +115,16 @@ class Node:
 		return index
 
 	def __getQuotedNewickLabel__(self, newick, index=0):
+		"""
+		Get a quoted label from a Newick string.
+
+		Args:
+			newick (str): Newick string.
+			index (int): Starting index that points to a quote.
+
+		Returns:
+			tuple[str, int]: Label and updated index.
+		"""
 		if ( len(newick) - index ) > 1:
 			if newick[index] == '"' or newick[index] == "'":
 				starting_index = index # deep copy
@@ -132,13 +143,33 @@ class Node:
 			raise MalformedNewickTree("attempted to extract the end position of a quoted label, but the newick string had <2 characters remaining")
 
 	def __getUnquotedNewickLabel__(self, newick, index=0):
-		starting_index = index # deep copy
-		index += 1 # get past first label character (which is already validated)
+		"""
+		Get an unquoted label from a Newick string.
+
+		Args:
+			newick (str): Newick string.
+			index (int): Starting index.
+
+		Returns:
+			tuple[str, int]: Extracted label and updated index.
+		"""
+		starting_index = index
+		index += 1 # skip first label character (already validated)
 		while index < len(newick) and not ( newick[index].isspace() or newick[index] in "),:;" ):
 			index += 1
 		return newick[starting_index:index], index
 	
 	def __getFromNewickAndPossiblySetBranchLength__(self, newick, index=0):
+		"""
+		Parse and store branch length metadata if present.
+
+		Args:
+			newick (str): Newick string.
+			index (int): Current index.
+
+		Returns:
+			int: Updated index.
+		"""
 		if newick[index] == ':':
 			# branch length present
 			index += 1 # get past the ':'
@@ -149,7 +180,7 @@ class Node:
 					branch_length_str += newick[index]
 					index += 1
 				# index is either past end (we didn't find a semi-colon),
-				# or it is a right paren, comma, semi-colon, or space
+				# or it is a right parenthesis, comma, semi-colon, or space
 				if index < len(newick):
 					try:
 						branch_length = float(branch_length_str) if '.' in branch_length_str else int(branch_length_str)
@@ -161,27 +192,47 @@ class Node:
 			else:
 				raise MalformedNewickTree("Expected branch length after ':', but found nothing.")
 
-			# index is either a right paren, comma, semi-colon, or space
+			# index is either a right parenthesis, comma, semi-colon, or space
 			# now let's skip past spaces to ensure it is one of the other three
 			index = self.__consumeNewickWhitespace__(newick, index=index)
 
 		return index
-
+	
+	# ----------- PUBLIC MEMBER FUNCTIONS ----------- ||
 	def isEqualBasedOnSetOfLeafLabels(self, other):
-		# it should already not have duplicates
+		""""
+		Compare self to another node to determine if they have the same leaf labels.
+
+		This method assumes that leaf labels within each tree have no duplicates.
+
+		Args:
+			other (Node): Another tree node.
+
+		Returns:
+			bool: True if both nodes have the same leaf labels, False otherwise.
+		"""
 		return self.isEqualBasedOnPreFetchedSetOfLeafLabels(sorted(other.getLeafLabels()))
 
-	def isEqualBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels): # leaf_labels must be sorted
+	def isEqualBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels):
+		"""
+		Compare self's leaf labels to pre-fetached, then sorted, leaf labels.
+
+		Args:
+			leaf_labels (list[str]): A sorted list of leaf labels.
+
+		Returns:
+			bool: True if this node's leaf labels match, False otherwise.
+		"""
 		return sorted(self.getLeafLabels()) == leaf_labels
 	
 	# "normal" "public" member functions
 	def isLeaf(self):
 		return not self.hasChildren()
 	
-	def hasChildren(self): # true if 1+ children
+	def hasChildren(self):
 		return bool(len(self.children))
 	
-	def hasGrandChildren(self): # true if 1+ grandchildren
+	def hasGrandChildren(self):
 		for child in self.children:
 			if child.hasChildren():
 				return True
