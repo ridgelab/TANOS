@@ -6,8 +6,6 @@ __author__ = "Brandon Pickett"
 import sys
 from .node import Node,MalformedNewickTree
 
-# ---------- FUNCTIONS --------------------------- ||
-
 # ----------- CLASSES ---------------------------- ||
 class Tree:
 	"""
@@ -21,28 +19,69 @@ class Tree:
 		name (str): Optional name for the tree,
 	"""
 
-	# constructor(s)
+	# ---------- CONSTRUCTOR --------------------- ||
 	def __init__(self, newick="", name=""):
-		# "normal" "public" member fields
+		"""
+		Initialize a Tree from a Newick string.
+
+		Args:
+			newick (str, optional): Newick-formatted string representing the tree.
+			name (str, optional): Name of the tree.
+		"""
 		self.root = Node()
 		self.name = name
-
 		self.__initializeNodes__(newick)
 
-	# "normal" "public" member functions
+	# ---------- PUBLIC MEMBER FUNCTIONS --------- ||
 	def getLeafLabels(self):
+		"""
+		Get all leaf labels in the tree.
+
+		Returns:
+			list[str]: List of leaf labels.
+		"""
 		return self.root.getLeafLabels()
 	
 	def getEachSubTreeLeafLabelSets(self):
+		"""
+		Get sets of leaf labels for each subtree.
+
+		Returns:
+			list[list[str]]: Nested lists of leaf labels for each subtree.
+		"""
 		return self.root.getEachSubTreeLeafLabelSets()
 
 	def getEachSubTreeLeafLabelSetStrs(self):
+		"""
+		Get string representations of leaf label sets for each subtree.
+
+		Returns:
+			list[str]: List of concatonated leaf labels for each subtree.
+		"""
 		return self.root.getEachSubTreeLeafLabelSetStrs()
 
 	def containsSubtreeBasedOnSetOfLeafLabels(self, node):
+		"""
+		Check whether the tree contains a subtree matching the leaf labels of another tree.
+
+		Args:
+			node (Node): Node whose leaf labels define the subtree of interest.
+		
+		Returns:
+			bool: True if a matching subtree exits, False otherwise. 
+		"""
 		return self.root.containsSubtreeBasedOnSetOfLeafLabels(node)
 
-	def containsSubtreeBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels): # leaf_labels must be sorted
+	def containsSubtreeBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels):
+			"""
+			Check whether the tree contains a subtree matching a pre-fetched set of leaf labels.
+
+			Args:
+				leaf_labels (list[str]): Sorted list of leaf labels to search for.
+
+			Returns:
+				bool: True if a matching subtree exists, False otherwise.
+			"""
 			return self.root.containsSubtreeBasedOnPreFetchedSetOfLeafLabels(leaf_labels)
 
 	def generateNodesViaDepthFirstTraversal(self):
