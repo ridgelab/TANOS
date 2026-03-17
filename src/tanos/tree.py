@@ -85,39 +85,106 @@ class Tree:
 			return self.root.containsSubtreeBasedOnPreFetchedSetOfLeafLabels(leaf_labels)
 
 	def generateNodesViaDepthFirstTraversal(self):
+		"""
+		Generate all nodes in the tree via depth-first traversal.
+
+		Yields:
+			Node: Each node in depth-first order.
+		"""
 		yield from self.root.generateNodesViaDepthFirstTraversal()
 
 	def scoreResiliency(self, taxa_x_trees):
+		"""
+		Compute and store taxa-resiliency scores for all nodes in tree.
+
+		Args:
+			taxa_x_trees (dict[str, list[Node]]): Mapping from taxa to lists of trees.
+
+		Sets self.metadata["taxa-resiliency"] in metadata of each node.
+		"""
 		for node in self.generateNodesViaDepthFirstTraversal():
 			node.scoreResiliency(taxa_x_trees)
 		self.root.scoreResiliency(taxa_x_trees, meaningful=False) # force root score to 0
 	
 	def replaceBranchLenWithOtherValue(self, meta_key):
+		"""
+		Replace branch lengths in all nodes with another metadata value.
+
+		Args:
+			meta_key (str): Metadata key whose value replaces branch_length.
+		"""
 		for node in self.generateNodesViaDepthFirstTraversal():
 			node.replaceBranchLenWithOtherValue(meta_key)
 
 	def replaceInternalLabelsWithOtherValue(self, meta_key):
+		"""
+		Replace labels of internal nodes with a metadata value.
+
+		Args:
+			meta_key (str): Metadata key to use for replacing internal node labels.
+		"""
 		for node in self.generateNodesViaDepthFirstTraversal():
 			node.replaceInternalLabelWithOtherValue(meta_key)
 
 	def getNewick(self):
+		"""
+		Export the tree in Newick format.
+
+		Returns:
+			str: Newick string representing the tree (end with';').
+		"""
 		return self.root.getNewick() + ";\n"
 	
 	def getNewickWithCommentedMetadata(self):
+		"""Export the tree in Newick format including metadata comments.
+
+		Returns:
+			str: Newick string with metadata annotations (ends with ';').
+		"""
 		return self.root.getNewickWithCommentedMetadata() + ";\n"
 
 	def getJson(self):
+		"""
+		Export the tree in compact JSON format.
+
+		Returns:
+			str: JSON string representing the tree.
+		"""
 		return '{"name":"' + self.name + '","root":' + self.root.getJson() + '}'
 	
 	def getPrettyJson(self):
-		#return json.loads(self.getJson())
+		"""
+		Export the tree in a human-readable, indented JSON format.
+
+		Returns:
+			str: Pretty JSON string.
+		"""
 		return '{\n\t"name": "' + self.name + '",\n\t"root":\n' + self.root.getPrettyJson(indent=2) + '\n}\n'
 	
 	def getAscii(self, prefix="", children_prefix=""):
+		"""
+		Generate an ASCII representation of the tree.
+
+		Args:
+			prefix (str, optional): Prefix for the current node line.
+			children_prefix (str, optional): Prefix for child lines.
+
+		Returns:
+			str: ASCII art of the tree.
+		"""
 		return self.root.getAscii(prefix=prefix, children_prefix=children_prefix)
 	
 	def getMermaid(self, replace_internal=False):
-		#return "graph LR:\n" + self.root.getMermaid()
+		"""
+		Generate a Mermaid diagram representation of the tree.
+		
+		Args:
+			replace_internal (bool, optional): Whether to replace internal node labels
+				with their taxa-resiliency values.
+
+		Returns:
+			str: Mermaid graph syntax representing the tree.
+		"""
 		mmd = "graph LR\n"
 		leaf_ids = []
 		long_ids = {}
@@ -143,7 +210,7 @@ class Tree:
 		mmd += "\tclass " + ','.join(map(str, leaf_ids)) + " leaf-nodes;\n"
 		return mmd
 
-	# "private" member functions
+	# ---------- PRIVATE MEMBER FUNCTIONS ------------------ ||
 	def __initializeNodes__(self, newick):
 		newick = self.__removeNewickComments__(newick).rstrip()
 		index = self.root.initializeNode(newick)
