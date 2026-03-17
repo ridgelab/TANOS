@@ -293,7 +293,8 @@ class Node:
 		Get leaf labels for all subtrees as concatonated strings.
 
 		Returns:
-			list[str]: List of leaf labels where each element in the list is a concatonated string of all subtree leaf labels.
+			list[str]: List of leaf labels where each element in the list is a concatonated 
+				string of all subtree leaf labels.
 		"""
 		leaves = []
 		if self.isLeaf():
@@ -305,23 +306,59 @@ class Node:
 		return leaves
 	
 	def containsSubtreeBasedOnSetOfLeafLabels(self, node):
+		"""
+		Check whether this node contains subtree with matching leaf labels as `node.`
+
+		Args:
+			node (Node): Node with leaf labels of interest.
+
+		Returns:
+			bool: True if a matching subtree exists, False otherwise. 
+		"""
 		subtree_of_interest = sorted(node.getLeafLabels())
 		return self.containsSubtreeBasedOnPreFetchedSetOfLeafLabels(subtree_of_interest)
 		
-	def containsSubtreeBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels): # leaf_labels must be sorted
+	def containsSubtreeBasedOnPreFetchedSetOfLeafLabels(self, leaf_labels):
+		"""
+		Check whether this node contains a subtree with a pre-featch set of leaf labels.
+
+		Args:
+			leaf_labels (list[str]): Sorted list of leaf labels of subtree.
+		
+		Returns:
+			bool: True if a matching subtree exists, False otherwise. 
+		"""
 		for child in self.children:
 			if child.containsSubtreeBasedOnPreFetchedSetOfLeafLabels(leaf_labels):
 				return True
 		return self.isEqualBasedOnPreFetchedSetOfLeafLabels(leaf_labels)
 	
 	def generateNodesViaDepthFirstTraversal(self):
+		"""
+		Generator to yield all nodes in subtree using *depth-first* traversal.
+
+		Yields:
+			Node: Each node in the subtree.
+		"""
 		for child in self.children:
 			yield from child.generateNodesViaDepthFirstTraversal()
 		yield self
 	
 	def scoreResiliency(self, taxa_x_trees, meaningful=True):
+		"""
+		Compute and store a taxa-resiliency score in the node's metadata.
+
+		Where a taxa-resiliency score is a measure of how robust the subtree is to exclusion of individual taxa.
+
+		Args:
+			taxa_x_trees (dict[str, list[Node]]): Mapping of taxon names to lists of trees.
+			meaningful (bool, optional): Whether the root of a given subtree has a meaningful resiliency score.
+				Where nodes with no granchildren do not have a meaningful score, and are assigned a deafult score of 1.
+
+		Sets self.metadata["taxa-resilency"] with a float score between 0 and 1.
+		"""
 		score = 0
-		if meaningful: # root has no meaningful resiliency score
+		if meaningful:
 			if self.hasGrandChildren():
 				taxa = sorted(self.getLeafLabels())
 				total_possible = 0
@@ -341,10 +378,22 @@ class Node:
 		self.metadata["taxa-resiliency"] = score
 
 	def replaceBranchLenWithOtherValue(self, meta_key):
+		"""
+		Replace branch length in metadata with another value.
+
+		Args:
+			meta_key (str): Metadata key to update the value of self.metadata["branch_length"].
+		"""
 		if meta_key in self.metadata:
 			self.metadata["branch_length"] = self.metadata[meta_key]
 	
 	def replaceInternalLabelWithOtherValue(self, meta_key):
+		"""
+		Replace the label of an internal node with a metadata value.
+
+		Args:
+			meta_key (str): Metadata key to update the value of self.label.
+		"""
 		if self.hasChildren():
 			if meta_key in self.metadata:
 				self.label = str(self.metadata[meta_key])
@@ -352,6 +401,12 @@ class Node:
 				self.label = ''
 	
 	def getNewick(self):
+		"""
+		Generate a Newick string representation of the tree or subtree.
+
+		Returns:
+			str: Newick-formatted string for this subtree.
+		"""
 		nwk = []
 		if len(self.children):
 			nwk.append('(')
@@ -368,6 +423,12 @@ class Node:
 		return ''.join(nwk)
 
 	def getNewickWithCommentedMetadata(self):
+		"""
+		Generate a Newick string with additional, commented metadata.
+
+		Returns:
+			str: Newick-formatted string with branch lengths and other metadata.
+		"""
 		nwk = []
 		# recursively get children
 		if len(self.children):
@@ -377,14 +438,14 @@ class Node:
 					nwk.append(',')
 				nwk.append(child.getNewickWithCommentedMetadata())
 			nwk.append(')')
-		# get this node's label (may be empty string, which is fine)
+		# get node label
 		if self.label:
 			nwk.append(self.label)
-		# get the branch length, if one is stored
+		# get the branch length, if stored
 		if "branch_length" in self.metadata:
 			nwk.append(':')
 			nwk.append(str(self.metadata["branch_length"]))
-		# get the other metadata (everything except branch length), if present, in a comment
+		# get other metadata, if present, in a comment
 		if len(self.metadata):
 			meta_keys = sorted(list(self.metadata.keys()))
 			try:
@@ -407,6 +468,12 @@ class Node:
 		return ''.join(nwk)
 
 	def getJson(self):
+		"""
+		Generate compact JSON representation of tree or subtree.
+
+		Returns:
+			str: JSON string representing tree or subtree.
+		"""
 		j = [f'{{"label":"{self.label}","metadata":{{']
 		for i,k in enumerate(sorted(list(self.metadata.keys()))):
 			if i > 0:
@@ -425,6 +492,15 @@ class Node:
 		return ''.join(j)
 
 	def getPrettyJson(self, indent=0):
+		"""
+		Generate a human-readable, indented JSON representation of tree or subtree.
+
+		Args:
+			indent (int, optional): Number of tab indents.
+
+		Returns:
+			str: "Pretty" JSON string.
+		"""
 		tabs = ''.join(['\t'] * indent)
 		
 		# label
@@ -462,24 +538,52 @@ class Node:
 		return ''.join(j)
 	
 	def getAscii(self, prefix="", children_prefix=""):
+		"""
+		Generate an ASCII art representation of the tree or subtree.
+
+		Args:
+			prefix(str, optional): Prefix for this node's line.
+
+		Returns:
+			str: ASCII representation of the tree or subtree.
+		"""
 		output = prefix + self.label + '\n'
 		if self.hasChildren():
 			for i in range(0, len(self.children) - 1, 1):
 				output += self.children[i].getAscii(prefix=f"{children_prefix}|-- ", children_prefix=f"{children_prefix}|   ")
 			output += self.children[-1].getAscii(prefix=f"{children_prefix}'-- ", children_prefix=f"{children_prefix}    ")
 		return output
-
-	# make str(some_node) meaningful
+	
+# ------------- STRING REPRESENTATIONS ----------- ||
 	def __str__(self):
+		"""
+		String representation of the node for print() and str().
+
+		Returns:
+			str: Label, metadata, and number of children of this node.
+		"""
 		return f'{{ label: "{self.label}", metadata: {str(self.metadata)}, children: {len(self.children)} }}'
 	
-	# make print(some_node) meaningful
 	def __repr__(self):
+		"""
+		Official string representation of the node.
+
+		Returns:
+			str: Node description, also including label, metadata, and number of children of this node.
+		"""
 		return "Node: " + self.__str__()
 	
 
 # ------------- MAIN ----------------------------- ||
 if __name__ == "__main__":
-	sys.stderr.write("ERROR: This is a module, it is meant to be imported -- not run directly!\n")
+	"""
+	This module is intended to be imported as a library for phylogenetic tree operations,
+	and running it directly is not currently supported.
+
+	Attempting to run will procuce an error message and exit.
+	"""
+	sys.stderr.write(
+		"ERROR: This is a module, it is meant to be imported, not run directly!\n"
+		)
 	sys.exit(1)
 
