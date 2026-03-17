@@ -212,6 +212,12 @@ class Tree:
 
 	# ---------- PRIVATE MEMBER FUNCTIONS ------------------ ||
 	def __initializeNodes__(self, newick):
+		"""
+		Initialize the tree nodes from a Newick string, remove comments, validate.
+
+		Args:
+			newick (str): Newick-formatted string.
+		"""
 		newick = self.__removeNewickComments__(newick).rstrip()
 		index = self.root.initializeNode(newick)
 
@@ -227,6 +233,15 @@ class Tree:
 			raise MalformedNewickTree("Reached end of tree without encountering a semi-colon")
 
 	def __removeNewickComments__(self, newick):
+		"""
+		Remove bracketed comments and preserve quoted labels in a Newick string.
+
+		Args:
+			newick (str): Raw Newick string.
+
+		Returns:
+			str: Cleaned Newick string without comments.
+		"""
 		keep = ""
 		i = 0
 		while i < len(newick):
@@ -241,7 +256,7 @@ class Tree:
 				if not found_r_bracket:
 					raise MalformedNewickTree("comment had no ending ']'")
 
-				i += 1 # go to char after ']' (or if at len already, it won't matter that its past len)
+				i += 1 # go to char after ']'
 
 			elif newick[i] == '"' or newick[i] == "'":
 				# this section allows for '[' and ']' inside quoted labels
@@ -259,25 +274,40 @@ class Tree:
 				if not found_end_quote:
 					raise MalformedNewickTree(f"quoted label had no ending quote ({q})")
 
-				i += 1 # go to char after end quote (or if at len already, it won't matter that its past len)
+				i += 1 # go to char after end quote
 			else:
 				keep += newick[i]
 				i += 1
 		return keep
 
-	# comparison operators
-	#def __lt__(self, other):
-	#	return self.root.__lt__(other.root)
-	
 	def isEqualBasedOnSetOfLeafLabels(self, other):
+		"""
+		Check if two trees are equal based on their leaf labels.
+
+		Args:
+			other (Tree): Another tree to compare.
+		
+		Returns:
+			bool: True if both trees have identical leaf labels sets.
+		"""
 		return self.root.isEqualBasedOnSetOfLeafLabels(other.root)
 
-	# make str(some_node) meaningful
 	def __str__(self):
+		"""
+		String representation of the tree.
+
+		Returns:
+			str: Name and root node.
+		"""
 		return f'{{ name: "{self.name}", root: {str(self.root)} }}'
 	
-	# make print(some_node) meaningful
 	def __repr__(self):
+		"""
+		Official representation of the tree.
+
+		Returns:
+			str: Debug string.
+		"""
 		return "Tree: " + self.__str__()
 	
 
