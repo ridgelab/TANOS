@@ -82,8 +82,8 @@ fi
 
 # define key variables
 DATA_DIR="data"
-INPUT_ALN="${DATA_DIR}/orig/supermatrix_dna.phy"
-OUTPUT_PFX="${DATA_DIR}/modelTest/modelTest"
+INPUT_ALN="${2:-${DATA_DIR}/orig/supermatrix_dna.phy}"
+OUTPUT_PFX="${2:-${DATA_DIR}/modelTest/modelTest}"
 declare -a OUTPUT_FILES
 
 EXIT_EARLY=0
@@ -137,7 +137,7 @@ fi
 # actually submit the job #
 # ####################### #
 
-JOB_NAME="iqtreeModelTest"
+JOB_NAME="${1:-iqtreeModelTest}"
 submitJob \
 	"${USE_CLUSTER}" \
 	"${JOB_NAME}" \
