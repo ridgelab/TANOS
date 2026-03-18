@@ -81,7 +81,7 @@ then
 fi
 
 # define key variables
-JOB_NAME="iqtreeModelTest}"
+JOB_NAME="iqtreeModelTest"
 DATA_DIR="data"
 INPUT_ALN="${DATA_DIR}/orig/supermatrix_dna.phy"
 OUTPUT_PFX="${DATA_DIR}/modelTest/modelTest"
