@@ -51,9 +51,9 @@ submitJob()
 
 # define key variables
 DATA_DIR="data"
-INPUT_ALN="${DATA_DIR}/orig/supermatrix_dna.phy"
-MODEL="GTR+F+I+G4"
-OUTPUT_PFX="${DATA_DIR}/mainTree/tree"
+INPUT_ALN="${2:-${DATA_DIR}/orig/supermatrix_dna.phy}"
+MODEL="${3:-GTR+F+I+G4}"
+OUTPUT_PFX="${4:-${DATA_DIR}/mainTree/tree}"
 declare -a OUTPUT_FILES
 
 EXIT_EARLY=0
@@ -107,7 +107,7 @@ fi
 # actually submit the job #
 # ####################### #
 
-JOB_NAME="iqtreeTree"
+JOB_NAME="${1:-iqtreeTree}"
 submitJob \
 	"${JOB_NAME}" \
 	"${INPUT_ALN}" \
