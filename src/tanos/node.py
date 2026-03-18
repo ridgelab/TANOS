@@ -35,7 +35,7 @@ class Node:
 		"""
 		Initialize an empty Node in a phylogenetic tree.
 		
-		The node is created with no children, and an empty label and metadata dictionary.
+		The node is created with no children, an empty label, and an empty metadata dictionary.
 		"""
 		self.children = []
 		self.label = ""
