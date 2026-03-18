@@ -1,8 +1,5 @@
 # Will I have to change calcScore to make sure it doesn’t get messed up if there’s a label indicating a parameter but no actual parameter?
-
-
 # How would I include a parameter for data directory
-
 
 process iqTreeModelTest {
 	container …
@@ -12,8 +9,7 @@ process iqTreeModelTest {
 		val output_prefix
 	
 	output:
-		MODEL="GTR+F+I+G4"
-
+		val model
 
 	script:
 }
@@ -23,8 +19,8 @@ process iqTreeTree {
 	container …
 	
 	input:
-path input_alignment
-val model
+		path input_alignment
+		val model
 	
 	output:
 
@@ -37,7 +33,7 @@ process jackknifeAlignment {
 	container …
 	
 	input:
-path input_alignment
+		path input_alignment
 	
 	output:
 
@@ -60,7 +56,6 @@ workflow {
 
 
    main:
-   // create a channel for inputs from a CSV file
    greeting_ch = channel.fromPath(params.input)
 
 
