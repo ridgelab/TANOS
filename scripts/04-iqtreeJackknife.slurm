@@ -101,7 +101,7 @@ trap outOfTime USR1
 
 # 	load modules
 module purge
-module load iqtree # we used version 1.6.12
+# module load iqtree # we used version 1.6.12
 
 #	check that enough input was given
 if [ $# -ne 3 ]
@@ -171,7 +171,7 @@ dotlockfile -u "${SLURM_SUBMIT_DIR}/.cleanup.tsv.lock"
 #	run the program of interest
 printf "%s\n" "Running the following now:" 1>&2
 printf "\t%s\n" "time iqtree -nt ${SLURM_NTASKS} -mem ${MEM_JOB_IN_GB}G -s ${INPUT_ALN} -t RANDOM -pre ${WORK_DIR}/`basename ${OUTPUT_PFX}` -m ${MODEL}" 1>&2
-time iqtree \
+time iqtree2 \
 	-nt ${SLURM_NTASKS} \
 	-mem ${MEM_JOB_IN_GB}G \
 	-s "${INPUT_ALN}" \
