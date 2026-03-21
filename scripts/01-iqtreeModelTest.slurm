@@ -65,7 +65,7 @@ trap control_c SIGHUP SIGINT SIGTERM SIGQUIT
 
 # 	load modules
 module purge
-module load iqtree # we used version 1.6.12
+# module load iqtree # we used version 1.6.12
 
 #	setup variables for the job
 #	# check that enough input was given
@@ -118,7 +118,7 @@ mkdir -p "${OUTPUT_DIRS[@]}" &> /dev/null
 unset OUTPUT_DIRS
 
 #	run the program of interest
-time iqtree \
+time iqtree2 \
 	-nt ${SLURM_NTASKS} \
 	-mem ${MEM_JOB_IN_GB}G \
 	-s "${INPUT_ALN}" \
