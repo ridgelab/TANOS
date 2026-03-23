@@ -52,7 +52,7 @@ submitJob()
 # define key variables
 JOB_NAME="iqtreeTree"
 DATA_DIR="data"
-INPUT_ALN="${DATA_DIR}/orig/supermatrix_dna.phy}"
+INPUT_ALN="${DATA_DIR}/orig/supermatrix_dna.phy"
 MODEL="GTR+F+I+G4"
 OUTPUT_PFX="${DATA_DIR}/mainTree/tree}"
 declare -a OUTPUT_FILES
