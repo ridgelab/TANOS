@@ -3,17 +3,17 @@ process model_test {
 	//container …
 	
 	input:
-    //val job_name
-		path input_alignment
+  //val job_name
+	path input_alignment
 	
 	output:
-    path "data/modelTest", emit: files
-    stdout, emit: model
+  path "data/modelTest", emit: files
+  stdout, emit: model
 
 	script:
   """
-    bash scripts/01-iqtreeModelTest.submit -i ${input_alignment}
-    awk -F': ' '/Best-fit model according to BIC:/ {print $2}' data/modelTest/modelTest.iqtree
+  bash scripts/01-iqtreeModelTest.submit -i ${input_alignment}
+  awk -F': ' '/Best-fit model according to BIC:/ {print $2}' data/modelTest/modelTest.iqtree
   """
 }
 
@@ -22,16 +22,16 @@ process main_tree {
 	//container …
 	
 	input:
-    //val job_name
-    path input_alignment
-    val model
+  //val job_name
+  path input_alignment
+  val model
 	
 	output:
-    path "data/mainTree"
+  path "data/mainTree"
 
 	script:
   """
-    bash scripts/02-iqtreeTree.submit -i ${input_alignment} -m ${model}
+  bash scripts/02-iqtreeTree.submit -i ${input_alignment} -m ${model}
   """
 }
 
@@ -40,28 +40,28 @@ process jackknife_alignment {
 	//container …
 	
 	input:
-    path input_alignment
+  path input_alignment
 	
 	output:
-    path "data/jackknife/aln"
+  path "data/jackknife/aln"
 
 	script:
   """
-    bash scripts/03-jackknifeAlignment.sh -i ${input_alignment}
+  bash scripts/03-jackknifeAlignment.sh -i ${input_alignment}
   """
 }
 
 process jackknife_tree {
   input:
-    path jackknife_aln
-    val model
+  path jackknife_aln
+  val model
 
   output:
-    path "data/jackknife/tree"
+  path "data/jackknife/tree"
   
   script:
   """
-    bash scripts/04-iqtreeJackknife.submit -m ${model}
+  bash scripts/04-iqtreeJackknife.submit -m ${model}
   """
 
 }
