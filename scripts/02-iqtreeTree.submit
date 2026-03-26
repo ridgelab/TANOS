@@ -57,12 +57,11 @@ MODEL="GTR+F+I+G4"
 OUTPUT_PFX="${DATA_DIR}/mainTree/tree"
 declare -a OUTPUT_FILES
 
-while getopts "j:i:m:o:" opt; do
+while getopts "j:i:m:" opt; do
 	case $opt in
 		j) JOB_NAME="$OPTARG" ;;
 		i) INPUT_ALN="$OPTARG" ;;
-		m) MODEL = "$OPTARG" ;;
-		o) OUTPUT_PFX="$OPTARG" ;;
+		m) MODEL="$OPTARG" ;;
 		*) echo "Usage: $0 [-j JOB_NAME] [-i INPUT_ALN] [-m MODEL] [-o OUTPUT_PFX]"
 			exit 1 ;;
 	esac

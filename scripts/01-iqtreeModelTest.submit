@@ -90,7 +90,6 @@ while getopts "j:i:o:" opt; do
 	case $opt in
 		j) JOB_NAME="$OPTARG" ;;
 		i) INPUT_ALN="$OPTARG" ;;
-		o) OUTPUT_PFX="$OPTARG" ;;
 		*) echo "Usage: $0 [-j JOB_NAME] [-i INPUT_ALN] [-o OUTPUT_PFX]"
 			exit 1 ;;
 	esac

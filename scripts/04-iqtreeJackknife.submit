@@ -101,6 +101,61 @@ STARTING_POINT=1
 REPLICATES=49
 JOBS_TO_RUN_AT_ONE_TIME=2
 
+while getopts "m:" opt; do
+	case $opt in
+		m) MODEL="$OPTARG" ;;
+		*) echo "Usage: $0 [-j MODEL]"
+			exit 1 ;;
+	esac
+done
+
+# This section is for if we want the user to provide the model
+
+# VALID_MODELS=(
+# "GTR+F+I+G4"
+# "TVM+F+I+G4"
+# "TVMe+I+G4"
+# "SYM+I+G4"
+# "TIM3+F+I+G4"
+# "TPM3u+F+I+G4"
+# "TIM2+F+I+G4"
+# "TPM3+I+G4"
+# "TIM3e+I+G4"
+# "TIM2e+I+G4"
+# "TPM2u+F+I+G4"
+# "TPM2+I+G4"
+# "K3P+I+G4"
+# "TIMe+I+G4"
+# "K2P+I+G4"
+# "TNe+I+G4"
+# "TIM+F+I+G4"
+# "K3Pu+F+I+G4"
+# "TN+F+I+G4"
+# "HKY+F+I+G4"
+# "GTR+F+G4"
+# "GTR+F+I"
+# "JC+I+G4"
+# "F81+F+I+G4"
+# "GTR+F"
+# )
+
+# # vaidate user input model
+# VALID=false
+# for m in "${VALID_MODELS[@]}"; do
+#     if [[ "$MODEL" == "$m" ]]; then
+#         VALID=true
+#         break
+#     fi
+# done
+
+# # exit if invalid model
+# if [[ "$VALID" == false ]]; then
+#     echo "Error: Invalid model '$MODEL'" >&2
+#     echo "Valid options are:" >&2
+#     printf "  %s\n" "${VALID_MODELS[@]}" >&2
+#     exit 1
+# fi
+
 # for each of the taxa
 while read FN
 do
