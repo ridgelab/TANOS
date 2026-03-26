@@ -1,50 +1,69 @@
 //need to add options to run locally or on slurm or on aws
-process iqTreeModelTest {
+process model_test {
 	//container …
 	
 	input:
+    //val job_name
 		path input_alignment
-		val output_prefix
 	
 	output:
-		MODEL="GTR+F+I+G4"
+    path "data/modelTest", emit: files
+    stdout, emit: model
 
 	script:
   """
-    bash scripts/01-iqtreeModelTest.submit ${input_alignment} ${output_prefix}
+    bash scripts/01-iqtreeModelTest.submit -i ${input_alignment}
+    awk -F': ' '/Best-fit model according to BIC:/ {print $2}' data/modelTest/modelTest.iqtree
   """
 }
 
 
-process iqTreeTree {
+process main_tree {
 	//container …
 	
 	input:
+    //val job_name
     path input_alignment
     val model
 	
 	output:
-
+    path "data/mainTree"
 
 	script:
   """
-    bash scripts/02-iqtreeTree.submit ${input_alignment} ${model}
+    bash scripts/02-iqtreeTree.submit -i ${input_alignment} -m ${model}
   """
 }
 
 
-process jackknifeAlignment {
+process jackknife_alignment {
 	//container …
 	
 	input:
     path input_alignment
 	
 	output:
+    path "data/jackknife/aln"
 
 	script:
   """
-    bash scripts/03-jackknifeAlignment.sh ${input_alignment}
+    bash scripts/03-jackknifeAlignment.sh -i ${input_alignment}
   """
+}
+
+process jackknife_tree {
+  input:
+    path jackknife_aln
+    val model
+
+  output:
+    path "data/jackknife/tree"
+  
+  script:
+  """
+    bash scripts/04-iqtreeJackknife.submit -m ${model}
+  """
+
 }
 
 
@@ -52,9 +71,10 @@ process jackknifeAlignment {
 * Pipeline parameters
 */
 params {
-   input: Path = 'data/orig/supermatrix_dna.phy'
-   output_prefix: String = ‘data/modeltest’
-   batch: String = 'batch'
+   input_alignment: Path = 'data/orig/supermatrix_dna.phy'
+   //job name
+
+   //need to have options for local, slurm, or aws
 }
 
 
@@ -62,31 +82,39 @@ workflow {
 
 
    main:
-   // create a channel for inputs from a CSV file
-   greeting_ch = channel.fromPath(params.input)
-
+   greeting_ch = channel.fromPath(params.input_alignment)
 
    // emit a greeting
-   iqTreeModelTest(tree_ch)
-   iqTreeTree(tree_ch, iqTreeModelTest.out)
-   jackknifeAlignment(tree_ch)
-   iqTreeJackknife(jackknifeAlignment.out)
+   model_test(tree_ch)
+   main_tree(tree_ch, iqTreeModelTest.out.model)
+   jackknife_alignment(tree_ch)
+   jackknife_tree(jackknife_alignment.out)
    calcScore(iqTreeJackknife.out)
 
 
    publish:
-   tree_file = iqTreeTree.out
-   jackknife_tree_file = jackknifeAlignment.out
+   model_files = model_test.out.files
+   tree_files = main_tree.out
+   jackknife__alignment_files = jackknife_alignment.out
+   jackknife_tree_files = jackknife_tree.out
 }
 
 
 output {
-   tree_file {
-       path 'data/mainTree/tree'
-       mode 'copy'
-   }
-   jackknife_tree_file {
-       path 'data/jackknife/aln'
-       mode 'copy'
-   }
+  model_files {
+    path 'data/modelTest'
+    mode 'copy'
+  }
+  tree_files {
+    path 'data/mainTree'
+    mode 'copy'
+  }
+  jackknife__alignment_files {
+    path 'data/jackknife/aln'
+    mode 'copy'
+  }
+  jackknife_tree_file {
+    path 'data/jackknife/tree'
+    mode 'copy'
+  }
 }
