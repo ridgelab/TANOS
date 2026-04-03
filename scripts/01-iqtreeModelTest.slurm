@@ -117,10 +117,14 @@ unset ALREADY_EXISTING_OUTPUT_FILES
 mkdir -p "${OUTPUT_DIRS[@]}" &> /dev/null
 unset OUTPUT_DIRS
 
+# sets defaults for threads and mem in case the file is not being run on the cluster
+THREADS=${SLURM_NTASKS:-4}
+MEM=${MEM_JOB_IN_GB:-8}
+
 #	run the program of interest
 time iqtree2 \
-	-nt ${SLURM_NTASKS} \
-	-mem ${MEM_JOB_IN_GB}G \
+	-nt ${THREADS} \
+	-mem ${MEM}G \
 	-s "${INPUT_ALN}" \
 	-pre "${OUTPUT_PFX}" \
 	-m TESTONLY

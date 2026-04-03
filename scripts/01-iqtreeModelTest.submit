@@ -33,6 +33,7 @@ submitJob()
 
 	if [ ${SUBMIT} -eq 0 ]
 	then
+		bash 
 		printf "%s\n" "Please run the following command locally:"
 		printf "\t%s\n" "bash \"${SCRIPTS_DIR}/01-iqtreeModelTest.slurm\" \\"
 		printf "\t\t%s\n" "\"${INPUT_ALN}\" \\"

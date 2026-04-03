@@ -1,0 +1,14 @@
+profiles {
+  local {
+    process.executor = 'local'
+  }
+
+  slurm {
+    process.executor = 'slurm'
+    process.queue = 'your_queue'
+  }
+
+  aws {
+    process.executor = 'awsbatch'
+  }
+}
