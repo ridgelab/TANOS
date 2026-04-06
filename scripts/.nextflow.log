@@ -1,0 +1,15 @@
+Apr-03 14:20:10.442 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Apr-03 14:20:10.470 [main] DEBUG nextflow.cli.CmdRun - N E X T F L O W  ~  version 25.10.4
+Apr-03 14:20:10.495 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/colemanhall-brown/.nextflow/plugins; core-plugins: nf-amazon@3.4.4,nf-azure@1.20.2,nf-cloudcache@0.5.0,nf-codecommit@0.5.0,nf-console@1.3.0,nf-google@1.23.5,nf-k8s@1.2.2,nf-tower@1.17.5,nf-wave@1.16.1
+Apr-03 14:20:10.516 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Apr-03 14:20:10.516 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Apr-03 14:20:10.517 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Apr-03 14:20:10.526 [main] DEBUG nextflow.util.RetryConfig - Missing nextflow session - using default retry config
+Apr-03 14:20:10.606 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Apr-03 14:20:10.611 [main] DEBUG nextflow.scm.ProviderConfig - Using SCM config path: /Users/colemanhall-brown/.nextflow/scm
+Apr-03 14:20:10.616 [main] DEBUG nextflow.cli.Launcher - Operation aborted
+nextflow.exception.AbortOperationException: Cannot find script file: main.nf
+	at nextflow.cli.CmdRun.getScriptFile(CmdRun.groovy:578)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:329)
+	at nextflow.cli.Launcher.run(Launcher.groovy:515)
+	at nextflow.cli.Launcher.main(Launcher.groovy:675)
