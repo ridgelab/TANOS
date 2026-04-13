@@ -1,20 +1,17 @@
-process MODEL_TEST {
-
-    tag "${job_name}"
+process MAIN_TREE {
 
     cpus 16
     memory '24 GB'
     time '1d'
 
-    publishDir "results/modelTest", mode: 'copy'
+    publishDir "${params.outdir}/mainTree", mode: 'copy'
 
     input:
-    val job_name
     path input_aln
+    val model
 
     output:
-    path "modelTest.*", emit: files
-    path "model.txt", emit: model
+    path "tree.*", emit: files
 
     script:
     """
@@ -23,7 +20,7 @@ process MODEL_TEST {
     # threads + memory from Nextflow
     THREADS=${task.cpus}
     MEM_GB=${task.memory.toGiga()}
-    OUTPUT_PFX='results/modelTest'
+    OUTPUT_PFX='mainTree'
 
     # run iqtree
     iqtree2 \
@@ -31,7 +28,7 @@ process MODEL_TEST {
         -mem \${MEM_GB}G \
         -s "${input_aln}" \
         -pre \${OUTPUT_PFX} \
-        -m TESTONLY
+        -m "${model}" 
 
     # handle outputs like your script
     if [ \$? -eq 0 ]; then
@@ -40,9 +37,5 @@ process MODEL_TEST {
         rm -f \${OUTPUT_PFX}.*
         exit 1
     fi
-
-    # Extract best model
-    awk -F': ' '/Best-fit model according to BIC:/ {print \$2}' \
-        \${OUTPUT_PFX}.iqtree > model.txt
     """
 }
