@@ -1,16 +1,18 @@
 # I just added this dockerfile to have it and start working on it, it is not finalized, I copied it from chat
 # INSTRUCTION args
 # Use a lightweight base image
-FROM ubuntu:22.04
+#FROM ubuntu:22.04
 
 # Avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+#ENV DEBIAN_FRONTEND=noninteractive
 
 # Install IQ-TREE and basic utilities
-RUN apt-get update && \
-    apt-get install -y iqtree && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM mambaorg/micromamba:latest
+
+RUN micromamba install -y -n base -c conda-forge -c bioconda iqtree && \
+    micromamba clean --all --yes
+
+ENV PATH=/opt/conda/bin:$PATH
 
 # Set working directory
 WORKDIR /app
