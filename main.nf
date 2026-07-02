@@ -30,10 +30,13 @@ workflow {
 
     MAIN_TREE(tree_file, model_ch)
 
-    JACKKNIFE_ALIGNMENT(tree_file)
-        .map { fa ->
-            def rep = fa.name.replaceAll(/\\.fa$/, "").toInteger()
-            tuple(fa, rep)
+    jackknife_ch = JACKKNIFE_ALIGNMENT(tree_file)
+        .flatten()
+        .flatMap { fa ->
+            (1..params.replicates).collect { rep ->
+                tuple(fa, rep)
+            }
         }
-        | IQTREE_JACKKNIFE
+
+    IQTREE_JACKKNIFE(jackknife_ch, model_ch)
 }
