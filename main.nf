@@ -6,15 +6,6 @@ include { IQTREE_JACKKNIFE } from './processes/04-iqtreeJackknife.nf'
 /*
 * Pipeline parameters
 */
-params.input_alignment = 'data/orig/supermatrix_dna.phy'
-params.outdir = 'results'
-
-Channel
-    .fromPath("${params.input_alignment}")
-    .map { file ->
-        def taxon = file.simpleName.replaceAll(/\.phy$/, "")
-        tuple(taxon, file)
-    }
 
 workflow {
 
