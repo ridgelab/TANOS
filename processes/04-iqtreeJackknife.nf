@@ -9,7 +9,7 @@ process IQTREE_JACKKNIFE {
     publishDir "${params.outdir}/${taxon}", mode: 'copy'
 
     input:
-    tuple val(taxon), path(aln), val(rep)
+    tuple path(fa), val(rep)
 
     output:
     path "${taxon}-${rep}.*"
@@ -18,7 +18,6 @@ process IQTREE_JACKKNIFE {
     """
     iqtree2 \
         -nt ${task.cpus} \
-        -mem ${task.memory.toGiga()}G \
         -s "${aln}" \
         -t RANDOM \
         -pre "${taxon}-${rep}" \

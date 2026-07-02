@@ -10,7 +10,7 @@ process JACKKNIFE_ALIGNMENT {
     path input_aln
 
     output:
-    path "*.phy", emit: files
+    path "*.fa", emit: files
 
     script:
     """
