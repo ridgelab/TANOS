@@ -11,7 +11,7 @@ process MAIN_TREE {
     val model
 
     output:
-    path "tree.*", emit: files
+    path "mainTree.*", emit: files
 
     script:
     """
