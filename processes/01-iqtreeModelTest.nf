@@ -17,17 +17,12 @@ process MODEL_TEST {
     """
     set -e
 
-    # threads + memory from Nextflow
-    THREADS=${task.cpus}
-    MEM_GB=${task.memory.toGiga()}
-    OUTPUT_PFX='modelTest'
-
     # run iqtree
     iqtree2 \
-        -nt \${THREADS} \
-        -mem \${MEM_GB}G \
+        -nt ${task.cpus} \
+        -mem ${task.memory.toGiga()}G \
         -s "${input_aln}" \
-        -pre \${OUTPUT_PFX} \
+        -pre 'modelTest' \
         -m TESTONLY
 
     # handle outputs like your script

@@ -17,17 +17,12 @@ process MAIN_TREE {
     """
     set -e
 
-    # threads + memory from Nextflow
-    THREADS=${task.cpus}
-    MEM_GB=${task.memory.toGiga()}
-    OUTPUT_PFX='mainTree'
-
     # run iqtree
     iqtree2 \
-        -nt \${THREADS} \
-        -mem \${MEM_GB}G \
+        -nt ${task.cpus} \
+        -mem ${task.memory.toGiga()}G \
         -s "${input_aln}" \
-        -pre \${OUTPUT_PFX} \
+        -pre 'mainTree' \
         -m "${model}" 
 
     # handle outputs like your script

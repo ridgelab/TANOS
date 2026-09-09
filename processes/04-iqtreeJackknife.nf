@@ -19,6 +19,7 @@ process IQTREE_JACKKNIFE {
     """
     iqtree2 \
         -nt ${task.cpus} \
+        -mem ${task.memory.toGiga()}G \
         -s "${fa}" \
         -t RANDOM \
         -pre "${fa.simpleName}-${rep}" \
