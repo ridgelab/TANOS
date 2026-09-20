@@ -3,3 +3,4 @@ build
 dist
 .eggs
 obj
+cluster_upload.sh

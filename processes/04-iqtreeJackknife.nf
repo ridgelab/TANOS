@@ -2,8 +2,8 @@ process IQTREE_JACKKNIFE {
 
     tag "${fa.simpleName}-${rep}"
 
-    cpus 16
-    memory '24 GB'
+    cpus 4
+    memory '8 GB'
     time '1d'
 
     publishDir "${params.outdir}/${fa.simpleName}", mode: 'copy'
