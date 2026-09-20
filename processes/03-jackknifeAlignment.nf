@@ -4,7 +4,7 @@ process JACKKNIFE_ALIGNMENT {
     memory '4 GB'
     time '1h'
 
-    publishDir "${params.outdir}/jackknife/tree", mode: 'copy'
+    publishDir "${params.outdir}/jackknife/aln", mode: 'copy'
 
     input:
     path input_aln

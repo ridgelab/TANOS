@@ -16,13 +16,14 @@ process MODEL_TEST {
     script:
     """
     set -e
+    OUTPUT_PFX='modelTest'
 
     # run iqtree
     iqtree2 \
         -nt ${task.cpus} \
         -mem ${task.memory.toGiga()}G \
         -s "${input_aln}" \
-        -pre 'modelTest' \
+        -pre "\${OUTPUT_PFX}" \
         -m TESTONLY
 
     # handle outputs like your script

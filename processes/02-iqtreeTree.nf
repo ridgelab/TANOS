@@ -12,17 +12,19 @@ process MAIN_TREE {
 
     output:
     path "mainTree.*", emit: files
+    path "mainTree.treefile", emit: treefile
 
     script:
     """
     set -e
+    OUTPUT_PFX='mainTree'
 
     # run iqtree
     iqtree2 \
         -nt ${task.cpus} \
         -mem ${task.memory.toGiga()}G \
         -s "${input_aln}" \
-        -pre 'mainTree' \
+        -pre "\${OUTPUT_PFX}" \
         -m "${model}" 
 
     # handle outputs like your script

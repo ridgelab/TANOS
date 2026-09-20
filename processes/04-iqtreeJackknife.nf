@@ -13,7 +13,7 @@ process IQTREE_JACKKNIFE {
     val model
 
     output:
-    path "${fa.simpleName}-${rep}.*"
+    path "${fa.simpleName}-${rep}.treefile"
 
     script:
     """
