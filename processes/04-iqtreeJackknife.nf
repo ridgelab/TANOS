@@ -2,9 +2,9 @@ process IQTREE_JACKKNIFE {
 
     tag "${fa.simpleName}-${rep}"
 
-    cpus 4
-    memory '8 GB'
-    time '1d'
+    cpus 8
+    memory '16 GB'
+    time '4d'
 
     publishDir "${params.outdir}/${fa.simpleName}", mode: 'copy'
 
@@ -23,6 +23,7 @@ process IQTREE_JACKKNIFE {
         -s "${fa}" \
         -t RANDOM \
         -pre "${fa.simpleName}-${rep}" \
-        -m "${model}"
+        -m "${model}" \
+        -fast
     """
 }

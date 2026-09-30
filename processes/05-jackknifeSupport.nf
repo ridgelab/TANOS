@@ -21,11 +21,9 @@ process JACKKNIFE_SUPPORT {
         
         iqtree2 \
             -nt ${task.cpus} \
-            -s ${input_aln} \
             -pre primary_with_jackknife \
             -z jackknife_replicates.trees \
             -t ${main_tree} \
-            -sup ${main_tree} \
-            -m "${model}"
+            -sup ${main_tree}
     """
 }
