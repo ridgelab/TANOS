@@ -16,7 +16,7 @@ process JACKKNIFE_ALIGNMENT {
     """
     set -e
 
-    python3 ${projectDir}/scripts/03-jackknifeAlignment.py \
+    python3 ${projectDir}/processes/03-jackknifeAlignment.py \
         "${input_aln}" \
         .
     """
