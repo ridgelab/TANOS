@@ -9,7 +9,7 @@
 # Install IQ-TREE and basic utilities
 FROM mambaorg/micromamba:latest
 
-RUN micromamba install -y -n base -c conda-forge -c bioconda iqtree && \
+RUN micromamba install -y -n base -c conda-forge -c bioconda iqtree matplotlib dendropy && \
     micromamba clean --all --yes
 
 ENV PATH=/opt/conda/bin:$PATH

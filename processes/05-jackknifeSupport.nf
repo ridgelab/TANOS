@@ -17,13 +17,13 @@ process JACKKNIFE_SUPPORT {
 
     script:
     """
-        cat ${jackknife_treefiles} > jackknife_replicates.trees
-        
-        iqtree2 \
-            -nt ${task.cpus} \
-            -pre primary_with_jackknife \
-            -z jackknife_replicates.trees \
-            -t ${main_tree} \
-            -sup ${main_tree}
+    cat ${jackknife_treefiles} > jackknife_replicates.trees
+
+    iqtree2 \\
+        -nt ${task.cpus} \\
+        -pre primary_with_jackknife \\
+        -z jackknife_replicates.trees \\
+        -t ${main_tree} \\
+        -sup ${main_tree}
     """
 }

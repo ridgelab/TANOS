@@ -13,7 +13,7 @@ process IQTREE_JACKKNIFE {
     val model
 
     output:
-    path "${fa.simpleName}-${rep}.treefile"
+    tuple val(rep), path("${fa.simpleName}-${rep}.treefile"), emit: trees
 
     script:
     """
