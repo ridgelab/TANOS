@@ -80,7 +80,32 @@ If running `setup.py`, you may wish to add `--user` or `--prefix` for an
 installation in non-default locations.
 
 ## III. Usage Instructions
-Please run `tanos -h` or `tanos --help`.
+The workflow's default input is `data/orig/supermatrix_dna.phy`, its output directory is `results`, and it runs 49 jackknife replicates per taxon. Set the input and output parameters when launching it:
+
+```bash
+nextflow run main.nf \
+  -profile local \
+  --input_alignment data/orig/supermatrix_dna.phy \
+  --outdir results \
+  --replicates 49
+```
+
+Use `-profile slurm` or `-profile aws` for the configured execution profiles. The pipeline runs these stages:
+
+1. Select a model with IQ-TREE (`-m TESTONLY`).
+2. Infer a main tree using the selected model.
+3. Create one FASTA alignment per removed taxon.
+4. Infer the requested number of IQ-TREE jackknife trees for each alignment.
+5. Combine the jackknife tree files and run IQ-TREE's `-sup` support calculation on the main tree.
+
+Outputs are published beneath the selected output directory in `modelTest/`, `mainTree/`, `jackknife/aln/`, taxon-specific directories, and `jackknifeSupport/`. Nextflow also retains its usual run metadata in its work directory and `.nextflow` files.
+
+The alignment preparation script reads sequential PHYLIP input and checks that the declared taxon count, sequence lengths, and unique taxon names are consistent. The Nextflow jackknife-support stage uses IQ-TREE's support calculation; it does not invoke the Python `tanos` command or retain the mapping between each replicate tree and its removed taxon. To calculate TANOS resiliency from a generated tree set, arrange replicate trees by removed taxon (or create the required two-column file-of-filenames) and run the Python scorer separately.
+
+**Output Formats:**
+- **Newick**: the main tree with each node's `taxa-resiliency` metadata in comments by default, or scores substituted for branch lengths or internal labels.
+- **JSON** and **pretty JSON**: a tree structure with labels, branch lengths, and node metadata, including the resiliency score.
+- **Mermaid**: optional graph syntax; internal labels can be replaced by scores with `--replace-label`.
 
 
 ## IV. License
