@@ -115,7 +115,7 @@ Please see the [LICENSE](https://github.com/pickettbd/tanos/blob/master/LICENSE)
 ## V. Contributors
 Brandon Pickett (Github: [@pickettbd](https://github.com/pickettbd))\
 Coleman Hall-Brown (Github: [@colemanhb](https://github.com/colemanhb))\
-Samantha John (Github: [@samanthaljohn](htps://github.com/samanthaljohn))
+Samantha John (Github: [@samanthaljohn](https://github.com/samanthaljohn))
 
 
 ## VI. Citation
