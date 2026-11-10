@@ -1,5 +1,7 @@
 process JACKKNIFE_SUPPORT {
 
+    tag "${replicate_count} replicates"
+
     cpus 4
     memory '8 GB'
     time '1d'
@@ -7,13 +9,11 @@ process JACKKNIFE_SUPPORT {
     publishDir "${params.outdir}/jackknifeSupport", mode: 'copy'
 
     input:
-    path input_aln
-    path jackknife_treefiles
+    tuple val(replicate_count), path(jackknife_treefiles)
     path main_tree
-    val model
 
     output:
-    path "primary_with_jackknife.*"
+    tuple val(replicate_count), path("${replicate_count}_replicates.suptree"), emit: support_tree
 
     script:
     """
@@ -21,7 +21,7 @@ process JACKKNIFE_SUPPORT {
 
     iqtree2 \\
         -nt ${task.cpus} \\
-        -pre primary_with_jackknife \\
+        -pre ${replicate_count}_replicates \\
         -z jackknife_replicates.trees \\
         -t ${main_tree} \\
         -sup ${main_tree}

@@ -4,7 +4,7 @@ process IQTREE_JACKKNIFE {
 
     cpus 8
     memory '16 GB'
-    time '4d'
+    time '3d'
 
     publishDir "${params.outdir}/${fa.simpleName}", mode: 'copy'
 

@@ -20,7 +20,7 @@ process JACKKNIFE_CONVERGENCE {
     set -euo pipefail
     mkdir -p convergence_results
 
-    for support_tree in *_replicates.treefile; do
+    for support_tree in *_replicates.suptree; do
         replicate_count="\${support_tree%%_*}"
         result_dir="convergence_results/\${replicate_count}_replicates"
         mkdir -p "\$result_dir"
